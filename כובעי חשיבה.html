@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דיון 6 כובעי החשיבה על AI</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .header {
+            background: white; border-radius: 20px; padding: 40px; text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1); margin-bottom: 30px;
+        }
+        .header h1 { font-size: 2.5em; color: #2c3e50; margin-bottom: 10px; }
+        .header p { font-size: 1.1em; color: #7f8c8d; }
+
+        .section {
+            background: white; border-radius: 15px; padding: 30px; margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        .section h2 {
+            color: #2c3e50; margin-bottom: 20px; font-size: 1.8em;
+            border-bottom: 3px solid #3498db; padding-bottom: 10px;
+        }
+        .topic-selector { margin-bottom: 30px; }
+        .topic-selector label {
+            display: block; margin-bottom: 10px; font-weight: bold; color: #2c3e50;
+        }
+        .topic-selector select {
+            width: 100%; padding: 15px; border: 2px solid #3498db; border-radius: 10px;
+            font-size: 1.1em; background: white; color: #333;
+        }
+        .topic-description {
+            margin-top: 15px; padding: 20px;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white; border-radius: 10px; font-size: 1.1em; line-height: 1.6;
+            display: none;
+        }
+        .topic-description.active { display: block; }
+
+        .important-note {
+            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            color: white; padding: 20px; border-radius: 10px; margin: 20px 0;
+            text-align: center; font-weight: bold; font-size: 1.2em;
+        }
+        .blue-hat-note {
+            background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%);
+            color: white; padding: 20px; border-radius: 10px; margin: 20px 0;
+            text-align: center; font-weight: bold;
+        }
+        .hat-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px; margin: 30px 0;
+        }
+        .hat-card {
+            border-radius: 15px; padding: 25px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1); transition: transform 0.3s ease;
+            background: white;
+        }
+        .hat-card:hover { transform: translateY(-5px); }
+        .hat-white { background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%); border: 2px solid #dee2e6; }
+        .hat-red { background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%); color: white; }
+        .hat-yellow { background: linear-gradient(135deg, #ffd93d 0%, #ffcd02 100%); color: #333; }
+        .hat-black { background: linear-gradient(135deg, #2d3436 0%, #636e72 100%); color: white; }
+        .hat-green { background: linear-gradient(135deg, #00b894 0%, #00a085 100%); color: white; }
+        .hat-blue { background: linear-gradient(135deg, #0984e3 0%, #74b9ff 100%); color: white; }
+        .hat-icon {
+            width: 60px; height: 60px; border-radius: 50%; margin: 0 auto 15px; display: flex;
+            align-items: center; justify-content: center; font-size: 30px; background: rgba(255,255,255,0.2);
+        }
+        .hat-title { font-size: 1.3em; font-weight: bold; margin-bottom: 10px; text-align: center; }
+        .hat-description { margin-bottom: 15px; text-align: center; font-style: italic; }
+        .hat-questions { margin-bottom: 15px; }
+        .hat-questions h4 { margin-bottom: 10px; text-decoration: underline; }
+        .hat-questions ul { list-style: none; padding-right: 20px; }
+        .hat-questions li { margin-bottom: 5px; position: relative; }
+        .hat-questions li:before {
+            content: "•"; color: rgba(255,255,255,0.7); font-weight: bold; position: absolute; right: -15px;
+        }
+        .notes-area {
+            background: rgba(255,255,255,0.1); border-radius: 8px; padding: 15px; margin-top: 15px;
+        }
+        .notes-area h4 { margin-bottom: 10px; }
+        .notes-input {
+            min-height: 100px; max-height: 400px; resize: vertical; width: 100%;
+            border: none; border-radius: 5px; padding: 12px; font-size: 1.05em; box-sizing: border-box;
+            background: rgba(255,255,255,0.2); color: inherit; transition: background 0.2s;
+            font-family: inherit; /* עברית נוחה */
+        }
+        .notes-input:focus { background: rgba(255,255,255,0.4); outline: none; }
+        .digital-products {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin: 20px 0;
+        }
+        .product-card {
+            background: linear-gradient(135deg, #a29bfe 0%, #6c5ce7 100%);
+            color: white; padding: 15px; border-radius: 10px; text-align: center;
+            transition: transform 0.3s ease; font-size: 0.9em;
+        }
+        .product-card:hover { transform: scale(1.05); }
+        .product-card h4 { margin-bottom: 8px; font-size: 1.1em; }
+        .download-section {
+            background: linear-gradient(135deg, #00cec9 0%, #00b894 100%);
+            color: white; padding: 30px; border-radius: 15px; text-align: center; margin: 20px 0;
+        }
+        .download-btn {
+            background: white; color: #00b894; border: none; padding: 15px 30px;
+            border-radius: 10px; font-size: 1.2em; font-weight: bold; cursor: pointer;
+            transition: all 0.3s ease; margin: 10px;
+        }
+        .download-btn:hover { background: #f0f0f0; transform: translateY(-2px); }
+        .download-btn:active { transform: scale(0.98); }
+        .success-message {
+            background: rgba(255,255,255,0.2); padding: 10px; border-radius: 5px;
+            margin-top: 10px; display: none;
+        }
+        .success-message.show { display: block; animation: fadeIn 0.5s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @media (max-width: 768px) {
+            .hat-grid { grid-template-columns: 1fr; }
+            .header h1 { font-size: 2em; }
+            .digital-products { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎩 דיון 6 כובעי החשיבה על AI</h1>
+            <p>פעילות דיגיטלית ליצירת תוצר עם בינה מלאכותית</p>
+        </div>
+
+        <div class="section">
+            <h2>📋 בחירת נושא לדיון</h2>
+            <div class="topic-selector">
+                <label for="topic-select">בחרו נושא אחד מהרשימה:</label>
+                <select id="topic-select">
+                    <option value="">-- בחרו נושא --</option>
+                    <option value="topic1">נושא 1: הבינה המלאכותית משנה את שוק העבודה</option>
+                    <option value="topic2">נושא 2: בינה מלאכותית כללית, האמנם?</option>
+                    <option value="topic3">נושא 3: AI והאקלים</option>
+                    <option value="topic4">נושא 4: אשליית ההבנה</option>
+                    <option value="topic5">נושא 5: אפקטים טרנספורמטיביים</option>
+                    <option value="topic6">נושא 6: רגולציה</option>
+                </select>
+            </div>
+            <div id="topic1-desc" class="topic-description">
+                <strong>הבינה המלאכותית משנה את שוק העבודה: תפקידים נעלמים, ואחרים נוצרים.</strong><br><br>
+                המעסיקים מחפשים עובדים שיודעים להפעיל מערכות חכמות – לא כאלה שהמערכות יודעות להחליף.<br><br>
+                מי שלא יסתגל – עלול להישאר מאחור.
+            </div>
+            <div id="topic2-desc" class="topic-description">
+                <strong>בינה מלאכותית כללית, האמנם?</strong><br><br>
+                הבינה המלאכותית של היום יודעת להבין, לנסח, לייעץ ואפילו לכתוב קוד – אבל עדיין מוגבלת למשימות מסוימות.<br><br>
+                בהינתן שיפתחו בינה מלאכותית כללית (AGI), היא תוכל לחשוב, ללמוד ולהסתגל כמעט כמו אדם – ואולי הרבה מעבר לזה.<br><br>
+                השאלה הבוערת: איך שומרים על שליטה במערכת שיכולה לחשוב טוב יותר מאיתנו – ולקבל החלטות שאנחנו כבר לא מבינים?
+            </div>
+            <div id="topic3-desc" class="topic-description">
+                <strong>AI והאקלים</strong><br><br>
+                דו"חות עדכניים חושפים: במקום לעזור למאבק במשבר האקלים, מערכות AI עלולות להחריף אותו.<br>
+                הביקוש לאימון מודלים והפעלת מרכזי נתונים צורך כמויות עצומות של חשמל ומים – וגורם לעלייה חדה בפליטות גזי חממה.<br><br>
+                אז איך מאזנים בין קידמה טכנולוגית לשמירה על כדור הארץ?
+            </div>
+            <div id="topic4-desc" class="topic-description">
+                <strong>אשליית ההבנה</strong><br><br>
+                גם כשאנחנו יודעים ש־AI לא באמת מרגיש – המוח שלנו משתכנע שכן.<br><br>
+                האנשה של מערכות כמו GPT עלולה לבלבל, לגרום לנו לגלות אמפתיה למשהו לא-חי, או לאבד רגישות מוסרית כלפי בני אדם.<br><br>
+                השאלה היא: איך נבנה ממשקים חכמים – מבלי לשקר לעצמנו שהם חיים?
+            </div>
+            <div id="topic5-desc" class="topic-description">
+                <strong>אפקטים טרנספורמטיביים</strong><br><br>
+                לא כל השפעה של בינה מלאכותית נראית מיד – לפעמים היא פשוט משנה את הדרך שבה אנחנו חושבים, בוחרים, או תופסים את העולם.<br>
+                מערכות המלצה, חיזוי, ויצירת תוכן מעצבות לנו את המציאות, טיפה אחר טיפה, עד שאנחנו שוכחים איך בחרנו פעם בעצמנו.<br><br>
+                האם אנחנו עדיין בוחרים – או פשוט זורמים עם מה שהאלגוריתם חושב שנאהב?
+            </div>
+            <div id="topic6-desc" class="topic-description">
+                <strong>רגולציה</strong><br><br>
+                הבינה המלאכותית מתפתחת מהר יותר מהחוקים שמסדירים אותה.<br><br>
+                מדינות, חברות ומוסדות מנסות להדביק את הקצב – אבל מי מחליט מה מותר, מה מסוכן, ומה פשוט לא הוגן?<br><br>
+                השאלה: איך מאזנים בין חדשנות לפריצת גבולות אתיים – ומי אחראי לשים את הקווים?
+            </div>
+        </div>
+
+        <div class="important-note">
+            ⏰ הדיון יימשך 20 דקות במהלכן המורה תורה להחליף כובעים
+        </div>
+
+        <div class="blue-hat-note">
+            💙 הכובע הכחול אחראי על כל הסיכומים והכתיבה של התובנות של כולם
+        </div>
+
+        <div class="section">
+            <h2>🎩 ביצוע הדיון - 6 כובעי החשיבה</h2>
+            <div class="hat-grid">
+
+                <div class="hat-card hat-white">
+                    <div class="hat-icon">🤍</div>
+                    <div class="hat-title">כובע לבן</div>
+                    <div class="hat-description">מידע עובדות ומספרים</div>
+                    <div class="hat-questions">
+                        <h4>שאלות מנחות:</h4>
+                        <ul>
+                            <li>מה הנתונים המדויקים בנושא?</li>
+                            <li>איך המצב נראה היום במספרים?</li>
+                            <li>מה הטרנדים הקיימים?</li>
+                        </ul>
+                    </div>
+                    <div class="notes-area">
+                        <h4>עובדות ונתונים מרכזיים:</h4>
+                        <textarea class="notes-input white-notes" placeholder="רשמו כאן..." rows="8"></textarea>
+                    </div>
+                </div>
+
+                <div class="hat-card hat-red">
+                    <div class="hat-icon">❤️</div>
+                    <div class="hat-title">כובע אדום</div>
+                    <div class="hat-description">רגשות אינטואיציה ותחושות</div>
+                    <div class="hat-questions">
+                        <h4>שאלות מנחות:</h4>
+                        <ul>
+                            <li>מה אתם מרגישים כלפי הנושא?</li>
+                            <li>מה האינטואיציה שלכם אומרת?</li>
+                            <li>איך זה משפיע עליכם רגשית?</li>
+                        </ul>
+                    </div>
+                    <div class="notes-area">
+                        <h4>רגשות ותחושות:</h4>
+                        <textarea class="notes-input red-notes" placeholder="רשמו כאן..." rows="8"></textarea>
+                    </div>
+                </div>
+
+                <div class="hat-card hat-yellow">
+                    <div class="hat-icon">💛</div>
+                    <div class="hat-title">כובע צהוב</div>
+                    <div class="hat-description">יתרונות רווחים תועלת</div>
+                    <div class="hat-questions">
+                        <h4>שאלות מנחות:</h4>
+                        <ul>
+                            <li>מה היתרונות המרכזיים?</li>
+                            <li>איך זה יכול לשפר את החיים?</li>
+                            <li>מה ההזדמנויות שנפתחות?</li>
+                        </ul>
+                    </div>
+                    <div class="notes-area">
+                        <h4>יתרונות והזדמנויות:</h4>
+                        <textarea class="notes-input yellow-notes" placeholder="רשמו כאן..." rows="8"></textarea>
+                    </div>
+                </div>
+
+                <div class="hat-card hat-black">
+                    <div class="hat-icon">🖤</div>
+                    <div class="hat-title">כובע שחור</div>
+                    <div class="hat-description">שיפוטיות חשדנות ביקורת</div>
+                    <div class="hat-questions">
+                        <h4>שאלות מנחות:</h4>
+                        <ul>
+                            <li>מה הסיכונים המרכזיים?</li>
+                            <li>איך זה יכול לגרום לנזק?</li>
+                            <li>מה הדאגות הביקורתיות?</li>
+                        </ul>
+                    </div>
+                    <div class="notes-area">
+                        <h4>סיכונים ודאגות:</h4>
+                        <textarea class="notes-input black-notes" placeholder="רשמו כאן..." rows="8"></textarea>
+                    </div>
+                </div>
+
+                <div class="hat-card hat-green">
+                    <div class="hat-icon">💚</div>
+                    <div class="hat-title">כובע ירוק</div>
+                    <div class="hat-description">חקירות הצעות רעיונות יצירתיים</div>
+                    <div class="hat-questions">
+                        <h4>שאלות מנחות:</h4>
+                        <ul>
+                            <li>מה הפתרונות החדשניים?</li>
+                            <li>איך אפשר לעשות זאת אחרת?</li>
+                            <li>מה הרעיונות הלא קונבנציונליים?</li>
+                        </ul>
+                    </div>
+                    <div class="notes-area">
+                        <h4>רעיונות יצירתיים ופתרונות:</h4>
+                        <textarea class="notes-input green-notes" placeholder="רשמו כאן..." rows="8"></textarea>
+                    </div>
+                </div>
+
+                <div class="hat-card hat-blue">
+                    <div class="hat-icon">💙</div>
+                    <div class="hat-title">כובע כחול</div>
+                    <div class="hat-description">חשיבה מחדש על התהליך</div>
+                    <div class="hat-questions">
+                        <h4>שאלות מנחות:</h4>
+                        <ul>
+                            <li>מה למדנו מהדיון?</li>
+                            <li>איך התהליך השפיע על ההבנה?</li>
+                            <li>מה המסקנות המרכזיות?</li>
+                        </ul>
+                    </div>
+                    <div class="notes-area">
+                        <h4>מסקנות ומחשבות מטה:</h4>
+                        <textarea class="notes-input blue-notes" placeholder="רשמו כאן..." rows="8"></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🎨 תוצרים אפשריים</h2>
+            <div class="digital-products">
+                <div class="product-card"><h4>📄 מסמך מדיניות</h4></div>
+                <div class="product-card"><h4>📊 מצגת עסקית</h4></div>
+                <div class="product-card"><h4>📈 אינפוגרפיקה</h4></div>
+                <div class="product-card"><h4>🎧 פודקאסט</h4></div>
+                <div class="product-card"><h4>📋 דו"ח מחקר</h4></div>
+                <div class="product-card"><h4>📝 מאמר דעה</h4></div>
+                <div class="product-card"><h4>🎬 תסריט וידאו</h4></div>
+                <div class="product-card"><h4>📱 פוסט רשתות חברתיות</h4></div>
+                <div class="product-card"><h4>📊 דשבורד נתונים</h4></div>
+                <div class="product-card"><h4>🗣️ נאום מנהיגות</h4></div>
+                <div class="product-card"><h4>📋 מדריך יישום</h4></div>
+                <div class="product-card"><h4>🎨 קמפיין שיווקי</h4></div>
+            </div>
+        </div>
+
+        <div class="download-section">
+            <h2>💾 שמירת התוצר</h2>
+            <p>לחצו על הכפתור כדי להוריד את כל התובנות שלכם כקובץ טקסט</p>
+            <button class="download-btn" onclick="downloadAsText()">📥 הורדה כקובץ טקסט</button>
+            <div id="success-message" class="success-message">
+                ✅ הקובץ הורד בהצלחה!
+            </div>
+            <p style="margin-top: 15px; font-size: 0.9em;">
+                לאחר ההורדה, תוכלו להעלות את הקובץ ל-NotebookLM ליצירת תוצר AI
+            </p>
+        </div>
+    </div>
+    <script>
+        // Handle topic selection
+        document.getElementById('topic-select').addEventListener('change', function() {
+            const selectedTopic = this.value;
+            document.querySelectorAll('.topic-description').forEach(desc => {
+                desc.classList.remove('active');
+            });
+            if (selectedTopic) {
+                const selectedDesc = document.getElementById(selectedTopic + '-desc');
+                if (selectedDesc) { selectedDesc.classList.add('active'); }
+            }
+        });
+
+        // Function to download content as text document
+        function downloadAsText() {
+            const selectedTopic = document.getElementById('topic-select').value;
+            const selectedTopicText = document.getElementById('topic-select').options[document.getElementById('topic-select').selectedIndex].text;
+            let content = "דיון 6 כובעי החשיבה על AI\n";
+            content += "==============================\n\n";
+            if (selectedTopic) {
+                content += "נושא נבחר: " + selectedTopicText + "\n\n";
+                const topicDesc = document.getElementById(selectedTopic + '-desc');
+                if (topicDesc) {
+                    content += topicDesc.textContent.trim() + "\n\n";
+                }
+            }
+            content += "תובנות מהדיון:\n";
+            content += "===============\n\n";
+            const hatNames = {
+                'white': 'כובע לבן - מידע עובדות ומספרים',
+                'red': 'כובע אדום - רגשות אינטואיציה ותחושות',
+                'yellow': 'כובע צהוב - יתרונות רווחים תועלת',
+                'black': 'כובע שחור - שיפוטיות חשדנות ביקורת',
+                'green': 'כובע ירוק - חקירות הצעות רעיונות יצירתיים',
+                'blue': 'כובע כחול - חשיבה מחדש על התהליך'
+            };
+            Object.keys(hatNames).forEach(color => {
+                content += hatNames[color] + ":\n";
+                content += "-".repeat(hatNames[color].length) + "\n";
+                const textarea = document.querySelector('.' + color + '-notes');
+                if (textarea && textarea.value.trim()) {
+                    content += textarea.value.trim() + "\n";
+                }
+                content += "\n";
+            });
+            content += "תאריך הדיון: " + new Date().toLocaleDateString('he-IL') + "\n";
+            // Create and download file
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'דיון_כובעי_חשיבה_AI.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            // Show success message
+            const successMsg = document.getElementById('success-message');
+            successMsg.classList.add('show');
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
